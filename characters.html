@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genshin Impact Database</title>
+    <style>
+        /* CSS styles for the page */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            /* background: url(/AdobeStock_451306466_Editorial_Use_Only.jpeg) no-repeat center center fixed; */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+
+
+        }
+
+        h1 {
+            /* font-size: 66px;
+            text-align: center;
+            color: rgb(107, 155, 203); */
+            font-size: 80px;
+            text-decoration: none;
+            /* background-color: orange; */
+            color: orange;
+            padding: 10px 20px;
+            /* border-radius: 20px; */
+            transition: all .3s ease;
+
+        }
+
+        h1:hover {
+            background-color: #ffc000;
+            color: #000;
+            box-shadow: 0 0 5px #ffc000, 0 0 20px #ffc000, 0 0 60px #ffc000, 0 0 150px #ffc000;
+        }
+
+        div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        img {
+
+            width: 20vw;
+        }
+
+        button {
+            margin: 0;
+            padding: 0;
+        }
+
+        h3 {
+            font-family: Helvetica;
+            font-size: 20px;
+            color: rgb(246, 247, 249);
+        }
+
+
+
+        input {
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            width: 400px;
+            color: #1a548f;
+        }
+
+        #results {
+            background: transparent;
+
+        }
+
+        #results::before {
+            content: '';
+            position: absolute;
+            width: 20%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0);
+
+        }
+
+        #result h3 {
+            /* text-align: center;
+            line-height: 400px;
+            color: #fff; */
+            color: black;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* #button {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            background: none;
+            font-size: 20px;
+            padding: 10px 20px;
+            font-family: monospace;
+            cursor: pointer;
+            margin: 10px;
+            color: #3498db;
+        }
+
+        #button :hover {
+            color: red;
+        } */
+
+
+        title {
+            text-decoration: none;
+            background-color: orange;
+            color: rgb(49, 49, 49);
+            padding: 10px 20px;
+            border-radius: 20px;
+            transition: all .3s ease;
+        }
+
+
+
+        #button {
+            display: flex;
+
+        }
+
+        .home {
+            text-decoration: none;
+            background-color: orange;
+            color: rgb(49, 49, 49);
+            padding: 10px 20px;
+            border-radius: 20px;
+            transition: all .3s ease;
+
+        }
+
+        .home:hover {
+            background-color: #ffc000;
+            color: #000;
+            box-shadow: 0 0 5px #ffc000, 0 0 20px #ffc000, 0 0 60px #ffc000, 0 0 150px #ffc000;
+        }
+
+
+
+        /* button:hover {
+            box-shadow: 0 0 5px cyan,
+                0 0 25px cyan, 0 0 50px cyan,
+                0 0 100px cyan, 0 0 200px cyan;
+        } */
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Genshin Impact Database</h1>
+        <div id="button">
+            <!-- <button id="characters-btn">Characters</button>
+            <button id="weapons-btn">Weapons</button>
+            <button id="enemies-btn">Enemies</button> -->
+            <a href="index.html" class="home">Home</a>
+
+        </div>
+        <input type="text" id="search" placeholder="Search...">
+        <div id="results"></div>
+    </div>
+    <script>
+        const api_url = "https://api.genshin.dev/";
+        const resultsDiv = document.querySelector("#results");
+        let data;
+        let dataType = "characters";
+
+        async function getData() {
+            const response = await fetch(api_url + dataType);
+            data = await response.json();
+            displayResults(data);
+        }
+
+        function displayResults(results) {
+            resultsDiv.innerHTML = "";
+
+            for (let i = 0; i < results.length; i++) {
+                let name = results[i];
+
+                let picLink = api_url + dataType + "/" + results[i] + "/gacha-splash";
+
+                if (name == "collei" || name == "kuki-shinobu" || name == "shikanoin-heizou" || name == "tighnari") {
+                    picLink = api_url + dataType + "/" + results[i] + "/gacha-splash";
+                }
+
+                let img = document.createElement("img");
+                img.src = picLink;
+                img.alt = name;
+
+                let resultName = document.createElement("h3");
+                resultName.textContent = upperCase(name);
+
+                resultsDiv.appendChild(img);
+                resultsDiv.appendChild(resultName);
+            }
+        }
+
+        function upperCase(string) {
+            return string[0].toUpperCase() + string.slice(1).toLowerCase();
+        }
+
+        function handleSearch() {
+            const searchTerm = document.querySelector("#search").value.toLowerCase();
+            const filteredResults = data.filter((result) => result.toLowerCase().includes(searchTerm));
+            displayResults(filteredResults);
+        }
+
+        function handleDataChange(event) {
+            const btnId = event.target.id;
+            switch (btnId) {
+                case "characters-btn":
+                    dataType = "characters";
+                    break;
+                case "weapons-btn":
+                    dataType = "weapons";
+                    break;
+                case "enemies-btn":
+                    dataType = "enemies";
+                    break;
+                default:
+                    break;
+            }
+            getData();
+        }
+
+        getData();
+        document.querySelector("#search").addEventListener("input", handleSearch);
+        document.querySelector("#characters-btn").addEventListener("click", handleDataChange);
+        document.querySelector("#weapons-btn").addEventListener("click", handleDataChange);
+        document.querySelector("#enemies-btn").addEventListener("click", handleDataChange);
+
+        // let color = prompt("Enter your color");
+        // document.body.style.background = color;
+
+
+
+    </script>
+</body>
+
+</html>
